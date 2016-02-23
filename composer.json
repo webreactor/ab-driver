@@ -1,0 +1,14 @@
+{
+    "name": "webreactor/ab-driver",
+    "description": "A/B testing lib",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maxim Popov",
+            "email": "maxim@zalil.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"toecto\\AMQPSimpleWrapper\\": "src/"}
+    }
+}
