@@ -6,10 +6,29 @@ class ABDriver {
     
     public $common_factors = array();
     public $tests = array();
+    public $event_prefix = ;
     protected $dispatcher = array();
 
-    public function __construct($dispatcher) {
+    public function __construct($dispatcher, $event_prefix = 'ab_test') {
         $this->dispatcher = $dispatcher;
+        $session_prefix = 'ab-'.$event_prefix;
+        if (!isset($_SESSION[$session_prefix]) {
+            $_SESSION[$session_prefix] = array(
+                'tests' => array(),
+                'common_factors' => array(),
+            );
+        }
+        $this->tests            = &$_SESSION[$session_prefix]['tests'];
+        $this->common_factors   = &$_SESSION[$session_prefix]['common_factors'];
+    }
+
+    public function initUtm($get) {
+        $tags = array('utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign');
+        foreach ($tags as $tag) {
+            if (isset($get[$tag])) {
+                $this->common_factors[$tag] = $get[$tag];
+            }
+        }
     }
 
     public function startTest($test_name, $factors = array(), $total_variants = 2) {
@@ -19,20 +38,32 @@ class ABDriver {
                 'variant' => $variant,
                 'factors' => $factors,
             );
-            $this->registerEvent($test_name, 'show', $variant, $factors);
         }
         return $this->tests[$test_name]['variant'];
     }
 
-    public function goal($test_name) {
+    public function getVariant($test_name) {
         if (isset($this->tests[$test_name])) {
-            $this->registerEvent($test_name, 'goal', $variant, $factors);
-            unset($this->tests[$test_name])
+            return $this->tests[$test_name]['variant'];
+        }
+        return null;
+    }
+
+    public function goal($test_name, $goal_name = 'goal', $factors = array()) {
+        if (isset($this->tests[$test_name])) {
+            $test = $this->tests[$test_name];
+            $this->registerEvent($test_name, $goal_name, $test['variant'], array_merge($test['factors'], $factors));
         }
     }
 
-    public function registerEvent($test_name, $action, $variant, $factors = array()) {
-        $event_name = $this->event_prefix . '.' . $action;
+    public function superGoal($goal_name = 'goal', $factors = array()) {
+        foreach ($this->tests as $key => $value) {
+            $this->goal($key, $goal_name, $factors);
+        }
+    }
+
+    public function registerEvent($test_name, $goal_name, $variant, $factors = array()) {
+        $event_name = "{$this->event_prefix}.{$test_name}.{$goal_name}";
         $event = array(
             'test_name' => $test_name,
             'action'    => $action,
