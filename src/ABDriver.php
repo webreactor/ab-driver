@@ -35,7 +35,7 @@ class ABDriver {
     public function startTest($test_name, $factors = array(), $total_variants = 2) {
         if (!isset($this->tests[$test_name])) {
             $variant = rand(1, $total_variants);
-            $test = array(
+            $this->tests[$test_name] = array(
                 'variant' => $variant,
                 'factors' => $factors,
             );
