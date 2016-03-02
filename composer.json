@@ -9,6 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": {"toecto\\AMQPSimpleWrapper\\": "src/"}
+        "psr-4": {"Reactor\\ABDriver\\": "src/"}
     }
 }
