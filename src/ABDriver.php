@@ -9,8 +9,9 @@ class ABDriver {
     public $event_prefix = ;
     protected $dispatcher = array();
 
-    public function __construct($dispatcher, $event_prefix = 'ab_test') {
+    public function __construct($dispatcher, $exchange, $event_prefix = 'ab_test') {
         $this->dispatcher = $dispatcher;
+        $this->exchange = $exchange;
         $session_prefix = 'ab-'.$event_prefix;
         if (!isset($_SESSION[$session_prefix]) {
             $_SESSION[$session_prefix] = array(
@@ -53,7 +54,9 @@ class ABDriver {
         if (isset($this->tests[$test_name])) {
             $test = $this->tests[$test_name];
             $this->registerEvent($test_name, $goal_name, $test['variant'], array_merge($test['factors'], $factors));
+            return $this->tests[$test_name]['variant'];
         }
+        return null;
     }
 
     public function superGoal($goal_name = 'goal', $factors = array()) {
@@ -63,14 +66,13 @@ class ABDriver {
     }
 
     public function registerEvent($test_name, $goal_name, $variant, $factors = array()) {
-        $event_name = "{$this->event_prefix}.{$test_name}.{$goal_name}";
         $event = array(
             'test_name' => $test_name,
-            'action'    => $action,
+            'goal'      => $goal_name,
             'variant'   => $variant,
             'factors'   => array_merge($this->common_factors, $factors),
         );
-        $this->dispatcher->dispatch($event_name, $event);
+        $this->dispatcher->publish($this->exchange, $this->event_prefix, $event);
     }
 
 }
