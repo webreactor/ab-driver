@@ -6,14 +6,19 @@ class ABDriver {
     
     public $common_factors = array();
     public $tests = array();
-    public $event_prefix = ;
+    public $event_prefix;
+    public $random_factor = null;
     protected $dispatcher = array();
 
     public function __construct($dispatcher, $exchange, $event_prefix = 'ab_test') {
         $this->dispatcher = $dispatcher;
         $this->exchange = $exchange;
         $session_prefix = 'ab-'.$event_prefix;
-        if (!isset($_SESSION[$session_prefix]) {
+        if (!isset($_COOKIE[$session_prefix])) {
+            setcookie($session_prefix, rand(1, 1000), time()+60*60*24*30);
+        }
+        $this->random_factor = (int)$_COOKIE[$session_prefix];
+        if (!isset($_SESSION[$session_prefix])) {
             $_SESSION[$session_prefix] = array(
                 'tests' => array(),
                 'common_factors' => array(),
@@ -34,7 +39,7 @@ class ABDriver {
 
     public function startTest($test_name, $factors = array(), $total_variants = 2) {
         if (!isset($this->tests[$test_name])) {
-            $variant = rand(1, $total_variants);
+            $variant = $this->random_factor % $total_variants + 1;
             $this->tests[$test_name] = array(
                 'variant' => $variant,
                 'factors' => $factors,
