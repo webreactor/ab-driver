@@ -18,10 +18,10 @@ $variant = $_ab->goal('good_cart_buy_button', 'shown', array('pk_good' => $pk_go
 // in template
 $variant = $_ab->getVariant('good_cart_buy_button');
 
-if ($variant == 1) {
-    echo "variant 1";
+if ($variant == 0) {
+    echo "variant 0";
 } else {
-    echo "variant 2";
+    echo "variant 1";
 }
 
 
@@ -36,10 +36,10 @@ $variant = $_ab->goal('good_list_onsale_tag', 'shown', array('pk_tree' => $pk_tr
 // in template
 $variant = $_ab->getVariant('good_list_onsale_tag');
 
-if ($variant == 1) {
-    echo "variant 1";
+if ($variant == 0) {
+    echo "variant 0";
 } else {
-    echo "variant 2";
+    echo "variant 1";
 }
 
 //------------------------------------------------------
