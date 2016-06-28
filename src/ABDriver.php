@@ -38,6 +38,8 @@ class ABDriver {
                 $this->common_factors[$tag] = $get[$tag];
             }
         }
+        $this->common_factors['session'] = session_id();
+        $this->common_factors['random_factor'] = $this->random_factor;
     }
 
     public function startTest($test_name, $factors = array(), $total_variants = 2) {
