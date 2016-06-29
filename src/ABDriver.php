@@ -44,20 +44,24 @@ class ABDriver {
             }
     }
 
-    public function startTest($test_name, $factors = array(), $total_variants = 2) {
+    public function startTest($test_name, $variants = null, $factors = array()) {
+        if ($variants === null) {
+            $variants = array('A', 'B');
+        }
         if (!isset($this->tests[$test_name])) {
-            $variant = abs($this->random_factor + crc32($test_name) / 2) % $total_variants;
+            $variant_id = abs($this->random_factor + crc32($test_name) / 2) % count($variants);
             $this->tests[$test_name] = array(
-                'variant' => $variant,
-                'factors' => $factors,
+                'variant_id'    => $variant_id,
+                'factors'       => $factors,
+                'variants'      => $variants,
             );
         }
-        return $this->tests[$test_name]['variant'];
+        return $this->tests[$test_name]['variant_id'];
     }
 
-    public function getVariant($test_name) {
+    public function getVariantId($test_name) {
         if (isset($this->tests[$test_name])) {
-            return $this->tests[$test_name]['variant'];
+            return $this->tests[$test_name]['variant_id'];
         }
         return null;
     }
@@ -65,8 +69,13 @@ class ABDriver {
     public function goal($test_name, $goal_name = 'goal', $factors = array()) {
         if (isset($this->tests[$test_name])) {
             $test = $this->tests[$test_name];
-            $this->registerEvent($test_name, $goal_name, $test['variant'], array_merge($test['factors'], $factors));
-            return $this->tests[$test_name]['variant'];
+            $this->registerEvent(
+                $test_name,
+                $goal_name,
+                $test['variant_name'],
+                array_merge($test['factors'], $factors)
+            );
+            return $this->tests[$test_name]['variant_id'];
         }
         return null;
     }
@@ -77,12 +86,17 @@ class ABDriver {
         }
     }
 
-    public function registerEvent($test_name, $goal_name, $variant, $factors = array()) {
+    public function registerEvent($test_name, $goal_name, $variant_name, $factors = array()) {
+        $variant_id = 0;
+        if (isset($this->tests[$test_name])) {
+            $variant_id = array_search($variant_name, $this->tests[$test_name]['variants']);
+        }
         $event = array(
-            'test_name' => $test_name,
-            'goal'      => $goal_name,
-            'variant'   => $variant,
-            'factors'   => array_merge($this->common_factors, $factors),
+            'test_name'     => $test_name,
+            'goal'          => $goal_name,
+            'variant_name'  => $variant_name,
+            'variant_id'    => (int)$variant_id,
+            'factors'       => array_merge($this->common_factors, $factors),
         );
         $this->dispatcher->publish($this->exchange, $this->event_prefix, $event);
     }
