@@ -68,7 +68,7 @@ class ABDriver {
     public function getVariantName($test_name) {
         if (isset($this->tests[$test_name])) {
             $test = $this->tests[$test_name];
-            return $test['variants'][$test['variant_id']];
+            return $test['variants'][$this->getVariantId($test_name)];
         }
         return null;
     }
