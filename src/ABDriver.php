@@ -36,12 +36,12 @@ class ABDriver {
     }
 
     public function initUtm($get) {
-            $tags = array('utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign');
-            foreach ($tags as $tag) {
-                if (isset($get[$tag])) {
-                    $this->common_factors[$tag] = $get[$tag];
-                }
+        $tags = array('utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign');
+        foreach ($tags as $tag) {
+            if (isset($get[$tag])) {
+                $this->common_factors[$tag] = $get[$tag];
             }
+        }
     }
 
     public function startTest($test_name, $variants = null, $factors = array()) {
@@ -56,12 +56,19 @@ class ABDriver {
                 'variants'      => $variants,
             );
         }
-        return $this->tests[$test_name]['variant_id'];
     }
 
     public function getVariantId($test_name) {
         if (isset($this->tests[$test_name])) {
             return $this->tests[$test_name]['variant_id'];
+        }
+        return null;
+    }
+
+    public function getVariantName($test_name) {
+        if (isset($this->tests[$test_name])) {
+            $test = $this->tests[$test_name];
+            return $test['variants'][$this->getVariantId($test_name)];
         }
         return null;
     }
@@ -72,12 +79,10 @@ class ABDriver {
             $this->registerEvent(
                 $test_name,
                 $goal_name,
-                $test['variant_name'],
+                $this->getVariantName($test_name),
                 array_merge($test['factors'], $factors)
             );
-            return $this->tests[$test_name]['variant_id'];
         }
-        return null;
     }
 
     public function superGoal($goal_name = 'goal', $factors = array()) {
@@ -87,7 +92,7 @@ class ABDriver {
     }
 
     public function registerEvent($test_name, $goal_name, $variant_name, $factors = array()) {
-        $variant_id = 0;
+        $variant_id = -1;
         if (isset($this->tests[$test_name])) {
             $variant_id = array_search($variant_name, $this->tests[$test_name]['variants']);
         }
