@@ -92,7 +92,7 @@ class ABDriver {
     }
 
     public function registerEvent($test_name, $goal_name, $variant_name, $factors = array()) {
-        $variant_id = 0;
+        $variant_id = -1;
         if (isset($this->tests[$test_name])) {
             $variant_id = array_search($variant_name, $this->tests[$test_name]['variants']);
         }
