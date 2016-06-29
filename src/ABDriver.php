@@ -23,8 +23,12 @@ class ABDriver {
         }
         if (!isset($_SESSION[$session_prefix])) {
             $_SESSION[$session_prefix] = array(
-                'tests' => array(),
-                'common_factors' => array(),
+                'tests'             => array(),
+                'common_factors'    => array(
+                    'referer'           => $_SERVER['HTTP_REFERER'],
+                    'random_factor'     => $this->random_factor,
+                    'session'           => session_id(),
+                ),
             );
         }
         $this->tests            = &$_SESSION[$session_prefix]['tests'];
@@ -32,14 +36,12 @@ class ABDriver {
     }
 
     public function initUtm($get) {
-        $tags = array('utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign');
-        foreach ($tags as $tag) {
-            if (isset($get[$tag])) {
-                $this->common_factors[$tag] = $get[$tag];
+            $tags = array('utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign');
+            foreach ($tags as $tag) {
+                if (isset($get[$tag])) {
+                    $this->common_factors[$tag] = $get[$tag];
+                }
             }
-        }
-        $this->common_factors['session'] = session_id();
-        $this->common_factors['random_factor'] = $this->random_factor;
     }
 
     public function startTest($test_name, $factors = array(), $total_variants = 2) {
