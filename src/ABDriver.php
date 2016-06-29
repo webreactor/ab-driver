@@ -52,6 +52,7 @@ class ABDriver {
             $variant_id = abs($this->random_factor + crc32($test_name) / 2) % count($variants);
             $this->tests[$test_name] = array(
                 'variant_id'    => $variant_id,
+                'variant_name'  => $variants[$variant_id],
                 'factors'       => $factors,
                 'variants'      => $variants,
             );
