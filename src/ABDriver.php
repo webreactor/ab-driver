@@ -13,16 +13,17 @@ class ABDriver {
     public function __construct($dispatcher, $exchange, $event_prefix = 'ab_test') {
         $this->dispatcher = $dispatcher;
         $this->exchange = $exchange;
-        $session_prefix = 'ab-'.$event_prefix;
-        if (!isset($_COOKIE[$session_prefix])) {
+        $event_prefix = 'ab.'.$event_prefix;
+        $this->event_prefix = $event_prefix;
+        if (!isset($_COOKIE[$this->event_prefix])) {
             $rnd_factor = rand(1, 1000);
-            setcookie($session_prefix, $rnd_factor, time()+60*60*24*30);
+            setcookie($event_prefix, $rnd_factor, time()+60*60*24*30);
             $this->random_factor = $rnd_factor;
         } else {
-            $this->random_factor = (int)$_COOKIE[$session_prefix];    
+            $this->random_factor = (int)$_COOKIE[$event_prefix];    
         }
-        if (!isset($_SESSION[$session_prefix])) {
-            $_SESSION[$session_prefix] = array(
+        if (!isset($_SESSION[$event_prefix])) {
+            $_SESSION[$event_prefix] = array(
                 'tests'             => array(),
                 'common_factors'    => array(
                     'referer'           => $_SERVER['HTTP_REFERER'],
@@ -31,8 +32,8 @@ class ABDriver {
                 ),
             );
         }
-        $this->tests            = &$_SESSION[$session_prefix]['tests'];
-        $this->common_factors   = &$_SESSION[$session_prefix]['common_factors'];
+        $this->tests            = &$_SESSION[$event_prefix]['tests'];
+        $this->common_factors   = &$_SESSION[$event_prefix]['common_factors'];
     }
 
     public function initUtm($get) {
