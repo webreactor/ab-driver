@@ -31,8 +31,9 @@ class ABDriver {
 
     public function initCommon() {
         $ref = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : null;
-        $link = isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI']) : null;
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+        $link = isset($_SERVER['REQUEST_URI'] && isset($_SERVER['HTTP_HOST'])
+                ? parse_url($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
+        $ip = isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
         return array(
             'tests'             => array(),
             'common_factors'    => array(
