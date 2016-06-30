@@ -30,20 +30,24 @@ class ABDriver {
         }
         $this->tests            = &$_SESSION[$event_prefix]['tests'];
         $this->common_factors   = &$_SESSION[$event_prefix]['common_factors'];
+        $this->updateCommon();
     }
 
     public function getCommon() {
         $ref = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : null;
-        $link = isset($_SERVER['REQUEST_URI']) && isset($_SERVER['HTTP_HOST'])
-                ? parse_url('//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
         $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
         return array(
             'ref'               => $ref,
-            'link'              => $link,
             'ip'                => $ip,
             'random_factor'     => $this->random_factor,
             'session'           => session_id(),
         );
+    }
+
+    public function updateCommon() {
+        $link = isset($_SERVER['REQUEST_URI']) && isset($_SERVER['HTTP_HOST'])
+                ? parse_url('//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
+        $this->common_factors['link'] = $link;
     }
 
     public function initUtm($get) {
