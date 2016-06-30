@@ -23,26 +23,26 @@ class ABDriver {
             $this->random_factor = (int)$_COOKIE[$event_prefix];    
         }
         if (!isset($_SESSION[$event_prefix])) {
-            $_SESSION[$event_prefix] = $this->initCommon();
+            $_SESSION[$event_prefix] = array(
+                'tests'             => array(),
+                'common_factors'    => $this->getCommon(),
+            );
         }
         $this->tests            = &$_SESSION[$event_prefix]['tests'];
         $this->common_factors   = &$_SESSION[$event_prefix]['common_factors'];
     }
 
-    public function initCommon() {
+    public function getCommon() {
         $ref = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : null;
         $link = isset($_SERVER['REQUEST_URI']) && isset($_SERVER['HTTP_HOST'])
                 ? parse_url('//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
         $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
         return array(
-            'tests'             => array(),
-            'common_factors'    => array(
-                'ref'               => $ref,
-                'link'              => $link,
-                'ip'                => $ip,
-                'random_factor'     => $this->random_factor,
-                'session'           => session_id(),
-            ),
+            'ref'               => $ref,
+            'link'              => $link,
+            'ip'                => $ip,
+            'random_factor'     => $this->random_factor,
+            'session'           => session_id(),
         );
     }
 
