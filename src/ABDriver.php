@@ -113,6 +113,7 @@ class ABDriver {
             'variant_name'  => $variant_name,
             'variant_id'    => (int)$variant_id,
             'factors'       => array_merge($this->common_factors, $factors),
+            'event_utime'   => time(),
         );
         $this->dispatcher->publish($this->exchange, $this->event_prefix, $event);
     }
