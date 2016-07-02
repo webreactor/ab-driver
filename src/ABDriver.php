@@ -10,7 +10,7 @@ class ABDriver {
     public $random_factor = null;
     protected $dispatcher = array();
 
-    public function __construct($dispatcher, $exchange, $event_prefix = 'ab_test') {
+    public function __construct($dispatcher, $exchange, $event_prefix = 'test') {
         $this->dispatcher = $dispatcher;
         $this->exchange = $exchange;
         $event_prefix = 'ab.'.$event_prefix;
@@ -25,25 +25,29 @@ class ABDriver {
         if (!isset($_SESSION[$event_prefix])) {
             $_SESSION[$event_prefix] = array(
                 'tests'             => array(),
-                'common_factors'    => $this->getCommon(),
+                'common_factors'    => $this->getCommonDefaults(),
             );
         }
         $this->tests            = &$_SESSION[$event_prefix]['tests'];
         $this->common_factors   = &$_SESSION[$event_prefix]['common_factors'];
+        $this->updateCommon();
     }
 
-    public function getCommon() {
+    public function getCommonDefaults() {
         $ref = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : null;
-        $link = isset($_SERVER['REQUEST_URI']) && isset($_SERVER['HTTP_HOST'])
-                ? parse_url('//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
         $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
         return array(
             'ref'               => $ref,
-            'link'              => $link,
             'ip'                => $ip,
             'random_factor'     => $this->random_factor,
             'session'           => session_id(),
         );
+    }
+
+    public function updateCommon() {
+        $link = isset($_SERVER['REQUEST_URI']) && isset($_SERVER['HTTP_HOST'])
+                ? parse_url('//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) : null;
+        $this->common_factors['link'] = $link;
     }
 
     public function initUtm($get) {
