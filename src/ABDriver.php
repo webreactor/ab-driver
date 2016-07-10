@@ -13,7 +13,7 @@ class ABDriver {
     public function __construct($dispatcher, $exchange, $event_prefix = 'test') {
         $this->dispatcher = $dispatcher;
         $this->exchange = $exchange;
-        $event_prefix = 'ab.'.$event_prefix;
+        $event_prefix = 'ab_'.$event_prefix;
         $this->event_prefix = $event_prefix;
         if (!isset($_COOKIE[$event_prefix])) {
             $rnd_factor = rand(1, 1000);
