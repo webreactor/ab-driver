@@ -15,12 +15,12 @@ class ABDriver {
         $this->exchange = $exchange;
         $event_prefix = 'ab.'.$event_prefix;
         $this->event_prefix = $event_prefix;
-        if (!isset($_COOKIE[$this->event_prefix])) {
+        if (!isset($_COOKIE[$event_prefix])) {
             $rnd_factor = rand(1, 1000);
             setcookie($event_prefix, $rnd_factor, time()+60*60*24*30);
             $this->random_factor = $rnd_factor;
         } else {
-            $this->random_factor = (int)$_COOKIE[$event_prefix];    
+            $this->random_factor = (int)$_COOKIE[$event_prefix];
         }
         if (!isset($_SESSION[$event_prefix])) {
             $_SESSION[$event_prefix] = array(
